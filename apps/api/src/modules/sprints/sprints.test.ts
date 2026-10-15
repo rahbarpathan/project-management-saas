@@ -116,6 +116,15 @@ describe('Sprints Module Integration Tests', () => {
     updatedAt: new Date(),
   };
 
+  const outsiderUser: MockUser = {
+    id: '33333333-3333-3333-3333-333333333333',
+    email: 'outsider@sprintflow.dev',
+    name: 'Outsider User',
+    avatarUrl: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
   const mainWorkspace: MockWorkspace = {
     id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
     name: 'Main Workspace',
@@ -146,7 +155,7 @@ describe('Sprints Module Integration Tests', () => {
 
   beforeEach(() => {
     app = createApp();
-    users = [{ ...memberUser }, { ...viewerUser }];
+    users = [{ ...memberUser }, { ...viewerUser }, { ...outsiderUser }];
     projects = [{ ...testProject }, { ...otherProject }];
     sprints = [];
     sprintTasks = [];
@@ -509,6 +518,19 @@ describe('Sprints Module Integration Tests', () => {
         .set('Authorization', createAuthHeader(viewerUser));
       expect(getRes.status).toBe(200);
       expect(getRes.body.sprint.name).toBe('Readable Sprint');
+    });
+
+    it('returns 404 when non-member tries to read or create sprints (tenant isolation)', async () => {
+      const listRes = await request(app)
+        .get(`/api/projects/${testProject.id}/sprints`)
+        .set('Authorization', createAuthHeader(outsiderUser));
+      expect(listRes.status).toBe(404);
+
+      const createRes = await request(app)
+        .post(`/api/projects/${testProject.id}/sprints`)
+        .set('Authorization', createAuthHeader(outsiderUser))
+        .send({ name: 'Outsider Sprint' });
+      expect(createRes.status).toBe(404);
     });
   });
 

@@ -24,6 +24,8 @@ pnpm-debug.log*
 
 # Testing / Coverage
 coverage/
+playwright-report/
+test-results/
 
 # OS / Editor
 .DS_Store

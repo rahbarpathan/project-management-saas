@@ -4,8 +4,11 @@ import {
   updateWorkspaceSchema,
   addMemberSchema,
   updateMemberRoleSchema,
+  createProjectSchema,
+  projectPaginationQuerySchema,
 } from '@sprintflow/shared';
 import { workspacesController } from './workspaces.controller';
+import { projectsController } from '../projects';
 import { authenticate } from '../../common/middleware/authenticate';
 import { validate } from '../../common/middleware/validate';
 
@@ -50,4 +53,17 @@ workspacesRouter.patch(
 workspacesRouter.delete(
   '/:id/members/:memberId',
   workspacesController.removeMember.bind(workspacesController),
+);
+
+// Project management routes under workspace
+workspacesRouter.get(
+  '/:id/projects',
+  validate({ query: projectPaginationQuerySchema }),
+  projectsController.listProjects.bind(projectsController),
+);
+
+workspacesRouter.post(
+  '/:id/projects',
+  validate({ body: createProjectSchema }),
+  projectsController.createProject.bind(projectsController),
 );

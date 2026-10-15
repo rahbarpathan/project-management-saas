@@ -55,6 +55,7 @@ describe('Central Permission Matrix', () => {
       expect(hasPermission('MEMBER', 'members:update')).toBe(false);
       expect(hasPermission('MEMBER', 'members:remove')).toBe(false);
       expect(hasPermission('MEMBER', 'projects:create')).toBe(false);
+      expect(hasPermission('MEMBER', 'projects:delete')).toBe(false);
     });
   });
 
@@ -66,12 +67,12 @@ describe('Central Permission Matrix', () => {
       expect(hasPermission('ADMIN', 'members:remove')).toBe(true);
       expect(hasPermission('ADMIN', 'projects:create')).toBe(true);
       expect(hasPermission('ADMIN', 'projects:update')).toBe(true);
+      expect(hasPermission('ADMIN', 'projects:delete')).toBe(true);
       expect(hasPermission('ADMIN', 'tasks:create')).toBe(true);
     });
 
-    it('denies workspace deletion and project deletion', () => {
+    it('denies workspace deletion (owner only)', () => {
       expect(hasPermission('ADMIN', 'workspace:delete')).toBe(false);
-      expect(hasPermission('ADMIN', 'projects:delete')).toBe(false);
       expect(() => assertPermission('ADMIN', 'workspace:delete')).toThrowError(ForbiddenError);
     });
   });

@@ -33,7 +33,7 @@ All permissions map directly to atomic actions enforced by the backend permissio
 | `projects:read` | View projects within the workspace | Yes | Yes | Yes | Yes |
 | `projects:create` | Create a new project | No | No | Yes | Yes |
 | `projects:update` | Edit project details or status | No | No | Yes | Yes |
-| `projects:delete` | Delete a project | No | No | No | **Yes** |
+| `projects:delete` | Delete a project | No | No | Yes | **Yes** |
 | `tasks:read` | View tasks and task details | Yes | Yes | Yes | Yes |
 | `tasks:create` | Create new tasks | No | Yes | Yes | Yes |
 | `tasks:update` | Edit task attributes, assignees, or statuses | No | Yes | Yes | Yes |

@@ -119,3 +119,62 @@ export const workspaceResponseSchema = z.object({
 });
 
 export type WorkspaceResponse = z.infer<typeof workspaceResponseSchema>;
+
+// Project Schemas
+export const projectKeySchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .min(2, 'Project key must be at least 2 characters')
+  .max(5, 'Project key cannot exceed 5 characters')
+  .regex(/^[A-Z0-9]{2,5}$/, 'Project key must consist of 2 to 5 uppercase alphanumeric characters');
+
+export const createProjectSchema = z.object({
+  name: z.string().trim().min(2, 'Project name must be at least 2 characters').max(50, 'Project name cannot exceed 50 characters'),
+  key: projectKeySchema,
+  description: z.string().trim().max(500, 'Description cannot exceed 500 characters').optional().nullable(),
+});
+
+export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+
+export const updateProjectSchema = z.object({
+  name: z.string().trim().min(2, 'Project name must be at least 2 characters').max(50, 'Project name cannot exceed 50 characters').optional(),
+  description: z.string().trim().max(500, 'Description cannot exceed 500 characters').optional().nullable(),
+});
+
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
+
+export const projectPaginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().optional(),
+});
+
+export type ProjectPaginationQuery = z.infer<typeof projectPaginationQuerySchema>;
+
+export const projectResponseSchema = z.object({
+  id: z.string().uuid(),
+  workspaceId: z.string().uuid(),
+  name: z.string(),
+  key: z.string(),
+  description: z.string().nullable().optional(),
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
+  tasksCount: z.number().int().optional(),
+  sprintsCount: z.number().int().optional(),
+});
+
+export type ProjectResponse = z.infer<typeof projectResponseSchema>;
+
+export const projectListResponseSchema = z.object({
+  projects: z.array(projectResponseSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+  }),
+});
+
+export type ProjectListResponse = z.infer<typeof projectListResponseSchema>;
+

@@ -1,5 +1,3 @@
-import { Router } from 'express';
-
-export const projectsRouter = Router();
-
-// Module routes will be registered here
+export * from './projects.routes';
+export * from './projects.controller';
+export * from './projects.service';

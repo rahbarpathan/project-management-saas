@@ -48,6 +48,7 @@ export const PERMISSION_MATRIX: Record<Role, ReadonlySet<WorkspaceAction>> = {
     'projects:read',
     'projects:create',
     'projects:update',
+    'projects:delete',
     'tasks:read',
     'tasks:create',
     'tasks:update',

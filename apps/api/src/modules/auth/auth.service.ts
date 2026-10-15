@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { RegisterInput, LoginInput, UserResponse } from '@sprintflow/shared';
 import { prisma } from '../../db/prisma';

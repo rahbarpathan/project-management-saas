@@ -47,9 +47,6 @@ importers:
       argon2:
         specifier: ^0.45.1
         version: 0.45.1
-      bcrypt:
-        specifier: ^6.0.0
-        version: 6.0.0
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -77,6 +74,9 @@ importers:
       pino-http:
         specifier: ^11.0.0
         version: 11.0.0
+      prisma:
+        specifier: ~6.4.1
+        version: 6.4.1(supports-color@7.2.0)(typescript@5.9.3)
       socket.io:
         specifier: ^4.8.4
         version: 4.8.4(supports-color@7.2.0)
@@ -114,9 +114,6 @@ importers:
       pino-pretty:
         specifier: ^13.2.0
         version: 13.2.0
-      prisma:
-        specifier: ~6.4.1
-        version: 6.4.1(supports-color@7.2.0)(typescript@5.9.3)
       socket.io-client:
         specifier: ^4.8.4
         version: 4.8.4(supports-color@7.2.0)
@@ -1361,10 +1358,6 @@ packages:
     resolution: {integrity: sha512-br0LOmjJqr6Rt4AEkadbcNf67Zpo7EPwKsWbjnRrJIa1QYFHQBqM4C7F2WTbV8ahTEcg1Eo+Y0aWjjORInYFyA==}
     engines: {node: '>=6.0.0'}
     hasBin: true
-
-  bcrypt@6.0.0:
-    resolution: {integrity: sha512-cU8v/EGSrnH+HnxV2z0J7/blxH8gq7Xh2JFT6Aroax7UohdmiJJlxApMxtKfuI7z68NvvVcmR78k2LbT6efhRg==}
-    engines: {node: '>= 18'}
 
   bcryptjs@3.0.3:
     resolution: {integrity: sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==}
@@ -4056,11 +4049,6 @@ snapshots:
   base64-js@1.5.1: {}
 
   baseline-browser-mapping@2.11.28: {}
-
-  bcrypt@6.0.0:
-    dependencies:
-      node-addon-api: 8.9.2
-      node-gyp-build: 4.8.4
 
   bcryptjs@3.0.3: {}
 

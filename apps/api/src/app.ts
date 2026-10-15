@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import pinoHttp from 'pino-http';
 import { HealthResponse } from '@sprintflow/shared';
 import { getEnv } from './config/env';
@@ -62,9 +63,10 @@ export function createApp(customRoutes?: (app: Express) => void): Express {
   // 5. Rate Limiting
   app.use(globalRateLimiter);
 
-  // 6. Body Parsers
+  // 6. Body & Cookie Parsers
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(cookieParser());
 
   // 7. Core Probes
   // GET /health - Shallow liveness check

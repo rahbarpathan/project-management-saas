@@ -8,3 +8,5 @@ allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
   prisma: true
+  bcrypt: true
+  argon2: true

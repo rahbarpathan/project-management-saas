@@ -1,5 +1,3 @@
-import { Router } from 'express';
-
-export const authRouter = Router();
-
-// Module routes will be registered here
+export * from './auth.routes';
+export * from './auth.controller';
+export * from './auth.service';

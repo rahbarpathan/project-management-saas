@@ -23,6 +23,14 @@ export const envSchema = z.object({
     .string({ required_error: 'CLIENT_URL is required' })
     .url('CLIENT_URL must be a valid URL')
     .default('http://localhost:3000'),
+  JWT_ACCESS_SECRET: z
+    .string()
+    .min(16, 'JWT_ACCESS_SECRET must be at least 16 characters')
+    .default('sprintflow_default_access_secret_key_32_characters_minimum'),
+  JWT_REFRESH_SECRET: z
+    .string()
+    .min(16, 'JWT_REFRESH_SECRET must be at least 16 characters')
+    .default('sprintflow_default_refresh_secret_key_32_characters_minimum'),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

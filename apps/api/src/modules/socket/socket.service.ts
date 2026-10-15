@@ -11,6 +11,10 @@ import {
   TaskMovedEvent,
   TaskDeletedEvent,
   CommentCreatedEvent,
+  SprintResponse,
+  SprintCreatedEvent,
+  SprintUpdatedEvent,
+  SprintDeletedEvent,
 } from '@sprintflow/shared';
 import { getEnv } from '../../config/env';
 import { prisma } from '../../db/prisma';
@@ -291,6 +295,41 @@ export class SocketService {
       comment,
     };
     this.io.to(`project:${projectId}`).emit('comment:created', event);
+  }
+
+  public emitSprintCreated(projectId: string, sprint: SprintResponse) {
+    if (!this.io) return;
+    const event: SprintCreatedEvent = {
+      eventId: randomUUID(),
+      projectId,
+      entityId: sprint.id,
+      version: 1,
+      sprint,
+    };
+    this.io.to(`project:${projectId}`).emit('sprint:created', event);
+  }
+
+  public emitSprintUpdated(projectId: string, sprint: SprintResponse) {
+    if (!this.io) return;
+    const event: SprintUpdatedEvent = {
+      eventId: randomUUID(),
+      projectId,
+      entityId: sprint.id,
+      version: 1,
+      sprint,
+    };
+    this.io.to(`project:${projectId}`).emit('sprint:updated', event);
+  }
+
+  public emitSprintDeleted(projectId: string, sprintId: string) {
+    if (!this.io) return;
+    const event: SprintDeletedEvent = {
+      eventId: randomUUID(),
+      projectId,
+      entityId: sprintId,
+      version: 1,
+    };
+    this.io.to(`project:${projectId}`).emit('sprint:deleted', event);
   }
 }
 

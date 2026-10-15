@@ -2,12 +2,14 @@ import { Router } from 'express';
 import {
   updateProjectSchema,
   createTaskSchema,
+  createSprintSchema,
   taskPaginationQuerySchema,
   activityPaginationQuerySchema,
 } from '@sprintflow/shared';
 import { projectsController } from './projects.controller';
 import { tasksController } from '../tasks';
 import { commentsController } from '../comments';
+import { sprintsController } from '../sprints';
 import { authenticate } from '../../common/middleware/authenticate';
 import { validate } from '../../common/middleware/validate';
 
@@ -44,6 +46,18 @@ projectsRouter.get(
   '/:id/activity',
   validate({ query: activityPaginationQuerySchema }),
   commentsController.getProjectActivity.bind(commentsController),
+);
+
+// Project sprint routes
+projectsRouter.get(
+  '/:id/sprints',
+  sprintsController.listProjectSprints.bind(sprintsController),
+);
+
+projectsRouter.post(
+  '/:id/sprints',
+  validate({ body: createSprintSchema }),
+  sprintsController.createSprint.bind(sprintsController),
 );
 
 

@@ -8,6 +8,9 @@ import {
   TaskMovedEvent,
   TaskDeletedEvent,
   CommentCreatedEvent,
+  SprintCreatedEvent,
+  SprintUpdatedEvent,
+  SprintDeletedEvent,
   TaskResponse,
   CommentListResponse,
 } from '@sprintflow/shared';
@@ -69,6 +72,7 @@ export function useProjectSocket(projectId: string | undefined): UseProjectSocke
       queryClient.invalidateQueries({ queryKey: ['board-tasks', projectId] });
       queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
       queryClient.invalidateQueries({ queryKey: ['project', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['project-sprints', projectId] });
     };
 
     const handleDisconnect = () => {
@@ -199,6 +203,28 @@ export function useProjectSocket(projectId: string | undefined): UseProjectSocke
       queryClient.invalidateQueries({ queryKey: ['task-activity', event.taskId] });
     };
 
+    const handleSprintCreated = (event: SprintCreatedEvent) => {
+      if (event.projectId !== projectId) return;
+      if (isDuplicate(event.eventId)) return;
+      queryClient.invalidateQueries({ queryKey: ['project-sprints', projectId] });
+    };
+
+    const handleSprintUpdated = (event: SprintUpdatedEvent) => {
+      if (event.projectId !== projectId) return;
+      if (isDuplicate(event.eventId)) return;
+      queryClient.invalidateQueries({ queryKey: ['project-sprints', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['board-tasks', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+    };
+
+    const handleSprintDeleted = (event: SprintDeletedEvent) => {
+      if (event.projectId !== projectId) return;
+      if (isDuplicate(event.eventId)) return;
+      queryClient.invalidateQueries({ queryKey: ['project-sprints', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['board-tasks', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['tasks', projectId] });
+    };
+
     // If already connected when effect runs, join room
     if (socket.connected) {
       setIsConnected(true);
@@ -213,6 +239,9 @@ export function useProjectSocket(projectId: string | undefined): UseProjectSocke
     socket.on('task:moved', handleTaskMoved);
     socket.on('task:deleted', handleTaskDeleted);
     socket.on('comment:created', handleCommentCreated);
+    socket.on('sprint:created', handleSprintCreated);
+    socket.on('sprint:updated', handleSprintUpdated);
+    socket.on('sprint:deleted', handleSprintDeleted);
 
     return () => {
       socket.emit('leave:project', { projectId });
@@ -224,6 +253,9 @@ export function useProjectSocket(projectId: string | undefined): UseProjectSocke
       socket.off('task:moved', handleTaskMoved);
       socket.off('task:deleted', handleTaskDeleted);
       socket.off('comment:created', handleCommentCreated);
+      socket.off('sprint:created', handleSprintCreated);
+      socket.off('sprint:updated', handleSprintUpdated);
+      socket.off('sprint:deleted', handleSprintDeleted);
     };
   }, [projectId, queryClient, isDuplicate]);
 

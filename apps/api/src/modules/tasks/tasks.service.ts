@@ -59,6 +59,7 @@ export interface TaskWithAssignee {
     createdAt: Date | string;
     updatedAt: Date | string;
   } | null;
+  sprintTasks?: Array<{ sprintId: string }> | null;
 }
 
 export class TasksService {
@@ -77,6 +78,7 @@ export class TasksService {
       dueDate: task.dueDate ? (task.dueDate instanceof Date ? task.dueDate.toISOString() : task.dueDate) : null,
       position: typeof task.position === 'object' && task.position !== null ? Number(task.position) : Number(task.position || 0),
       version: task.version,
+      sprintId: task.sprintTasks?.[0]?.sprintId ?? null,
       createdAt: task.createdAt instanceof Date ? task.createdAt.toISOString() : task.createdAt,
       updatedAt: task.updatedAt instanceof Date ? task.updatedAt.toISOString() : task.updatedAt,
       assignee: task.assignee
@@ -293,6 +295,13 @@ export class TasksService {
       ...(query.status ? { status: query.status } : {}),
       ...(query.priority ? { priority: query.priority } : {}),
       ...(query.assigneeId ? { assigneeId: query.assigneeId } : {}),
+      ...(query.sprintId
+        ? query.sprintId === 'none' || query.sprintId === 'backlog'
+          ? { sprintTasks: { none: {} } }
+          : query.sprintId === 'active'
+            ? { sprintTasks: { some: { sprint: { status: 'ACTIVE' } } } }
+            : { sprintTasks: { some: { sprintId: query.sprintId } } }
+        : {}),
       ...(query.dueDateFrom || query.dueDateTo
         ? {
             dueDate: {
@@ -334,6 +343,7 @@ export class TasksService {
       orderBy,
       include: {
         assignee: true,
+        sprintTasks: { select: { sprintId: true } },
       },
     });
 

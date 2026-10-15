@@ -14,6 +14,7 @@ describe('Central Permission Matrix', () => {
       expect(hasPermission('VIEWER', 'members:read')).toBe(true);
       expect(hasPermission('VIEWER', 'projects:read')).toBe(true);
       expect(hasPermission('VIEWER', 'tasks:read')).toBe(true);
+      expect(hasPermission('VIEWER', 'sprints:read')).toBe(true);
     });
 
     it('rejects mutation actions', () => {
@@ -30,6 +31,9 @@ describe('Central Permission Matrix', () => {
         'tasks:update',
         'tasks:delete',
         'comments:create',
+        'sprints:create',
+        'sprints:update',
+        'sprints:delete',
       ];
 
       for (const action of deniedActions) {
@@ -46,6 +50,10 @@ describe('Central Permission Matrix', () => {
       expect(hasPermission('MEMBER', 'tasks:update')).toBe(true);
       expect(hasPermission('MEMBER', 'tasks:delete')).toBe(true);
       expect(hasPermission('MEMBER', 'comments:create')).toBe(true);
+      expect(hasPermission('MEMBER', 'sprints:read')).toBe(true);
+      expect(hasPermission('MEMBER', 'sprints:create')).toBe(true);
+      expect(hasPermission('MEMBER', 'sprints:update')).toBe(true);
+      expect(hasPermission('MEMBER', 'sprints:delete')).toBe(true);
     });
 
     it('denies workspace configuration and member management', () => {
@@ -96,6 +104,10 @@ describe('Central Permission Matrix', () => {
         'tasks:update',
         'tasks:delete',
         'comments:create',
+        'sprints:read',
+        'sprints:create',
+        'sprints:update',
+        'sprints:delete',
       ];
 
       for (const action of allActions) {

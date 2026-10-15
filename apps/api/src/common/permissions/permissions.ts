@@ -17,7 +17,11 @@ export type WorkspaceAction =
   | 'tasks:create'
   | 'tasks:update'
   | 'tasks:delete'
-  | 'comments:create';
+  | 'comments:create'
+  | 'sprints:read'
+  | 'sprints:create'
+  | 'sprints:update'
+  | 'sprints:delete';
 
 export const PERMISSION_MATRIX: Record<Role, ReadonlySet<WorkspaceAction>> = {
   OWNER: new Set<WorkspaceAction>([
@@ -37,6 +41,10 @@ export const PERMISSION_MATRIX: Record<Role, ReadonlySet<WorkspaceAction>> = {
     'tasks:update',
     'tasks:delete',
     'comments:create',
+    'sprints:read',
+    'sprints:create',
+    'sprints:update',
+    'sprints:delete',
   ]),
   ADMIN: new Set<WorkspaceAction>([
     'workspace:read',
@@ -54,6 +62,10 @@ export const PERMISSION_MATRIX: Record<Role, ReadonlySet<WorkspaceAction>> = {
     'tasks:update',
     'tasks:delete',
     'comments:create',
+    'sprints:read',
+    'sprints:create',
+    'sprints:update',
+    'sprints:delete',
   ]),
   MEMBER: new Set<WorkspaceAction>([
     'workspace:read',
@@ -64,12 +76,17 @@ export const PERMISSION_MATRIX: Record<Role, ReadonlySet<WorkspaceAction>> = {
     'tasks:update',
     'tasks:delete',
     'comments:create',
+    'sprints:read',
+    'sprints:create',
+    'sprints:update',
+    'sprints:delete',
   ]),
   VIEWER: new Set<WorkspaceAction>([
     'workspace:read',
     'members:read',
     'projects:read',
     'tasks:read',
+    'sprints:read',
   ]),
 };
 

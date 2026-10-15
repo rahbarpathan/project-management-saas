@@ -16,6 +16,7 @@ import { workspacesRouter } from './modules/workspaces';
 import { projectsRouter } from './modules/projects';
 import { tasksRouter } from './modules/tasks';
 import { commentsRouter } from './modules/comments';
+import { sprintsRouter } from './modules/sprints';
 
 export function createApp(customRoutes?: (app: Express) => void): Express {
   const env = getEnv();
@@ -99,6 +100,7 @@ export function createApp(customRoutes?: (app: Express) => void): Express {
   app.use('/api/projects', projectsRouter);
   app.use('/api/tasks', tasksRouter);
   app.use('/api/comments', commentsRouter);
+  app.use('/api/sprints', sprintsRouter);
 
   // Mount custom / module routes if provided
   if (customRoutes) {

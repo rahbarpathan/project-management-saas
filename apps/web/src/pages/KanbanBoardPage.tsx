@@ -5,6 +5,7 @@ import {
   TaskListResponse,
   ProjectResponse,
   WorkspaceMemberResponse,
+  SprintListResponse,
   TaskPriority,
   TaskStatus,
 } from '@sprintflow/shared';
@@ -37,6 +38,7 @@ export function KanbanBoardPage() {
   const search = searchParams.get('search') || '';
   const priority = (searchParams.get('priority') || 'ALL') as TaskPriority | 'ALL';
   const assigneeId = searchParams.get('assigneeId') || 'ALL';
+  const sprintId = searchParams.get('sprintId') || 'ALL';
   const selectedTaskId = searchParams.get('taskId');
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -61,6 +63,15 @@ export function KanbanBoardPage() {
     enabled: !!workspaceId,
   });
   const members = membersData?.members || [];
+
+  // Fetch Sprints for the project
+  const { data: sprintsData } = useQuery({
+    queryKey: ['project-sprints', projectId],
+    queryFn: () => api.get<SprintListResponse>(`/api/projects/${projectId}/sprints`),
+    enabled: !!projectId,
+  });
+  const sprints = sprintsData?.sprints || [];
+  const activeSprint = sprints.find((s) => s.status === 'ACTIVE');
 
   // Fetch Tasks for the Kanban board (all tasks ordered by position)
   const {
@@ -96,9 +107,18 @@ export function KanbanBoardPage() {
       if (assigneeId !== 'ALL' && task.assigneeId !== assigneeId) {
         return false;
       }
+      if (sprintId !== 'ALL') {
+        if (sprintId === 'ACTIVE') {
+          if (!activeSprint || task.sprintId !== activeSprint.id) return false;
+        } else if (sprintId === 'BACKLOG') {
+          if (task.sprintId) return false;
+        } else {
+          if (task.sprintId !== sprintId) return false;
+        }
+      }
       return true;
     });
-  }, [rawTasks, search, priority, assigneeId]);
+  }, [rawTasks, search, priority, assigneeId, sprintId, activeSprint]);
 
   const updateQueryParam = (key: string, value: string | null) => {
     const next = new URLSearchParams(searchParams);
@@ -116,7 +136,8 @@ export function KanbanBoardPage() {
     setSearchParams(next);
   };
 
-  const hasActiveFilters = Boolean(search.trim()) || priority !== 'ALL' || assigneeId !== 'ALL';
+  const hasActiveFilters =
+    Boolean(search.trim()) || priority !== 'ALL' || assigneeId !== 'ALL' || sprintId !== 'ALL';
 
   const handleOpenTask = (taskId: string) => {
     updateQueryParam('taskId', taskId);
@@ -184,6 +205,12 @@ export function KanbanBoardPage() {
             <span className="px-3 py-1.5 rounded-md bg-surface-hover text-text-primary font-semibold shadow-xs">
               Kanban Board
             </span>
+            <Link
+              to={`/workspaces/${workspaceId}/projects/${projectId}/sprints`}
+              className="px-3 py-1.5 rounded-md text-text-muted hover:text-text-primary transition-colors"
+            >
+              Sprints
+            </Link>
           </div>
 
           {canManageTasks && (
@@ -240,6 +267,26 @@ export function KanbanBoardPage() {
                 value: m.userId,
                 label: m.user?.name || m.user?.email || 'Member',
               })),
+            ]}
+          />
+        </div>
+
+        {/* Sprint Filter */}
+        <div className="w-full sm:w-52">
+          <Select
+            value={sprintId}
+            onChange={(e) => updateQueryParam('sprintId', e.target.value)}
+            aria-label="Filter tasks by sprint"
+            options={[
+              { value: 'ALL', label: 'All Sprints' },
+              ...(activeSprint ? [{ value: 'ACTIVE', label: `Active: ${activeSprint.name}` }] : []),
+              { value: 'BACKLOG', label: 'No Sprint (Backlog)' },
+              ...sprints
+                .filter((s) => s.id !== activeSprint?.id)
+                .map((s) => ({
+                  value: s.id,
+                  label: `${s.name} (${s.status.toLowerCase()})`,
+                })),
             ]}
           />
         </div>

@@ -230,6 +230,7 @@ export const taskPaginationQuerySchema = z.object({
   status: TaskStatusSchema.optional(),
   priority: TaskPrioritySchema.optional(),
   assigneeId: z.string().uuid('Invalid assignee ID').optional(),
+  sprintId: z.string().optional(),
   dueDateFrom: z.coerce.date().optional(),
   dueDateTo: z.coerce.date().optional(),
   sortBy: TaskSortBySchema.default('position'),
@@ -249,6 +250,7 @@ export const taskResponseSchema = z.object({
   dueDate: z.union([z.string(), z.date()]).nullable().optional(),
   position: z.number(),
   version: z.number().int(),
+  sprintId: z.string().uuid().nullable().optional(),
   createdAt: z.union([z.string(), z.date()]),
   updatedAt: z.union([z.string(), z.date()]),
   assignee: userResponseSchema.nullable().optional(),
@@ -399,5 +401,75 @@ export interface CommentCreatedEvent {
   comment: CommentResponse;
 }
 
+// Sprint Schemas
+export const SprintStatusSchema = z.enum(['PLANNED', 'ACTIVE', 'COMPLETED']);
+export type SprintStatus = z.infer<typeof SprintStatusSchema>;
 
+export const createSprintSchema = z.object({
+  name: z.string().trim().min(1, 'Sprint name is required').max(255, 'Sprint name cannot exceed 255 characters'),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
+});
 
+export type CreateSprintInput = z.infer<typeof createSprintSchema>;
+
+export const updateSprintSchema = z.object({
+  name: z.string().trim().min(1, 'Sprint name cannot be empty').max(255, 'Sprint name cannot exceed 255 characters').optional(),
+  startDate: z.coerce.date().optional().nullable(),
+  endDate: z.coerce.date().optional().nullable(),
+  status: SprintStatusSchema.optional(),
+});
+
+export type UpdateSprintInput = z.infer<typeof updateSprintSchema>;
+
+export const addSprintTaskSchema = z.object({
+  taskId: z.string().uuid('Invalid task ID'),
+});
+
+export type AddSprintTaskInput = z.infer<typeof addSprintTaskSchema>;
+
+export const sprintResponseSchema = z.object({
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  name: z.string(),
+  startDate: z.union([z.string(), z.date()]).nullable().optional(),
+  endDate: z.union([z.string(), z.date()]).nullable().optional(),
+  status: SprintStatusSchema,
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
+  tasksCount: z.number().int().optional(),
+  completedTasksCount: z.number().int().optional(),
+  tasks: z.array(taskResponseSchema).optional(),
+});
+
+export type SprintResponse = z.infer<typeof sprintResponseSchema>;
+
+export const sprintListResponseSchema = z.object({
+  sprints: z.array(sprintResponseSchema),
+});
+
+export type SprintListResponse = z.infer<typeof sprintListResponseSchema>;
+
+// Real-time Sprint Events
+export interface SprintCreatedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  sprint: SprintResponse;
+}
+
+export interface SprintUpdatedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  sprint: SprintResponse;
+}
+
+export interface SprintDeletedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+}

@@ -15,6 +15,7 @@ import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectTasksPage } from './pages/ProjectTasksPage';
 import { MembersPage } from './pages/MembersPage';
 import { KanbanBoardPage } from './pages/KanbanBoardPage';
+import { SprintsPage } from './pages/SprintsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,12 +61,20 @@ export function App() {
                       element={<KanbanBoardPage />}
                     />
                     <Route
+                      path="/workspaces/:workspaceId/projects/:projectId/sprints"
+                      element={<SprintsPage />}
+                    />
+                    <Route
                       path="/projects/:projectId/tasks"
                       element={<ProjectTasksPage />}
                     />
                     <Route
                       path="/projects/:projectId/board"
                       element={<KanbanBoardPage />}
+                    />
+                    <Route
+                      path="/projects/:projectId/sprints"
+                      element={<SprintsPage />}
                     />
                     <Route path="/workspaces/:workspaceId/members" element={<MembersPage />} />
                     <Route path="/design" element={<DesignSystemPage />} />

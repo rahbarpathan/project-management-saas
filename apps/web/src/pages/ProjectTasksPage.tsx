@@ -226,6 +226,12 @@ export function ProjectTasksPage() {
             >
               Kanban Board
             </Link>
+            <Link
+              to={`/workspaces/${workspaceId}/projects/${projectId}/sprints`}
+              className="px-3 py-1.5 rounded-md text-text-muted hover:text-text-primary transition-colors"
+            >
+              Sprints
+            </Link>
           </div>
 
           {canManageTasks && (

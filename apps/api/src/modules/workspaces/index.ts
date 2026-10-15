@@ -1,5 +1,3 @@
-import { Router } from 'express';
-
-export const workspacesRouter = Router();
-
-// Module routes will be registered here
+export * from './workspaces.routes';
+export * from './workspaces.controller';
+export * from './workspaces.service';

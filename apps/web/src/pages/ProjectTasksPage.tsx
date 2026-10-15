@@ -206,16 +206,30 @@ export function ProjectTasksPage() {
           )}
         </div>
 
-        {canManageTasks && (
-          <Button
-            variant="primary"
-            onClick={() => setIsCreateModalOpen(true)}
-            id="create-task-button"
-            className="self-start sm:self-auto"
-          >
-            New Task
-          </Button>
-        )}
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* View Mode Switcher */}
+          <div className="flex items-center rounded-lg border border-border bg-surface p-0.5 text-xs font-medium">
+            <span className="px-3 py-1.5 rounded-md bg-surface-hover text-text-primary font-semibold shadow-xs">
+              List View
+            </span>
+            <Link
+              to={`/workspaces/${workspaceId}/projects/${projectId}/board`}
+              className="px-3 py-1.5 rounded-md text-text-muted hover:text-text-primary transition-colors"
+            >
+              Kanban Board
+            </Link>
+          </div>
+
+          {canManageTasks && (
+            <Button
+              variant="primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              id="create-task-button"
+            >
+              New Task
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filter and Control Bar */}

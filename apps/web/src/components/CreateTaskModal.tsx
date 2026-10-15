@@ -22,6 +22,7 @@ interface CreateTaskModalProps {
   onClose: () => void;
   projectId: string;
   members: WorkspaceMemberResponse[];
+  initialStatus?: TaskStatus;
 }
 
 export function CreateTaskModal({
@@ -29,14 +30,21 @@ export function CreateTaskModal({
   onClose,
   projectId,
   members,
+  initialStatus = 'TODO',
 }: CreateTaskModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<TaskStatus>('TODO');
+  const [status, setStatus] = useState<TaskStatus>(initialStatus);
   const [priority, setPriority] = useState<TaskPriority>('MEDIUM');
   const [assigneeId, setAssigneeId] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [errors, setErrors] = useState<{ title?: string }>({});
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setStatus(initialStatus);
+    }
+  }, [isOpen, initialStatus]);
 
   const queryClient = useQueryClient();
   const toast = useToast();

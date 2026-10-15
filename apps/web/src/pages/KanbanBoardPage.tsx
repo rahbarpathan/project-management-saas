@@ -22,6 +22,8 @@ import {
 import { KanbanBoard } from '../components/kanban/KanbanBoard';
 import { CreateTaskModal } from '../components/CreateTaskModal';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer';
+import { useProjectSocket } from '../hooks/useProjectSocket';
+import { PresenceAvatars } from '../components/PresenceAvatars';
 
 export function KanbanBoardPage() {
   const { workspaceId: paramWorkspaceId, projectId } = useParams<{
@@ -39,6 +41,9 @@ export function KanbanBoardPage() {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createInitialStatus, setCreateInitialStatus] = useState<TaskStatus>('TODO');
+
+  // Real-time Socket & Presence
+  const { presenceUsers } = useProjectSocket(projectId);
 
   // Fetch Project details
   const { data: projectData } = useQuery({
@@ -165,6 +170,9 @@ export function KanbanBoardPage() {
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* Real-time Project Presence */}
+          <PresenceAvatars users={presenceUsers} />
+
           {/* View Mode Switcher */}
           <div className="flex items-center rounded-lg border border-border bg-surface p-0.5 text-xs font-medium">
             <Link

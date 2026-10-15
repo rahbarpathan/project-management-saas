@@ -23,6 +23,7 @@ import {
   generateRebalancedPositions,
   POSITION_STEP,
 } from './position';
+import { socketService } from '../socket/socket.service';
 
 export type TaskEventType = 'TASK_CREATED' | 'TASK_UPDATED' | 'TASK_MOVED' | 'TASK_DELETED';
 
@@ -264,6 +265,8 @@ export class TasksService {
       timestamp: new Date().toISOString(),
     });
 
+    socketService.emitTaskCreated(projectId, response);
+
     return response;
   }
 
@@ -488,6 +491,8 @@ export class TasksService {
       timestamp: new Date().toISOString(),
     });
 
+    socketService.emitTaskUpdated(project.id, response);
+
     return response;
   }
 
@@ -675,6 +680,8 @@ export class TasksService {
       timestamp: new Date().toISOString(),
     });
 
+    socketService.emitTaskMoved(project.id, response);
+
     return response;
   }
 
@@ -734,6 +741,8 @@ export class TasksService {
       task: { id: task.id, projectId: project.id },
       timestamp: new Date().toISOString(),
     });
+
+    socketService.emitTaskDeleted(project.id, task.id, task.version);
   }
 }
 

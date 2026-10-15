@@ -346,5 +346,58 @@ export const activityListResponseSchema = z.object({
 
 export type ActivityListResponse = z.infer<typeof activityListResponseSchema>;
 
+// Real-time & Socket Events
+export interface PresenceUser {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string | null;
+}
+
+export interface PresenceUpdateEvent {
+  projectId: string;
+  users: PresenceUser[];
+}
+
+export interface TaskCreatedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  task: TaskResponse;
+}
+
+export interface TaskUpdatedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  task: TaskResponse;
+}
+
+export interface TaskMovedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  task: TaskResponse;
+}
+
+export interface TaskDeletedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+}
+
+export interface CommentCreatedEvent {
+  eventId: string;
+  projectId: string;
+  entityId: string;
+  version: number;
+  taskId: string;
+  comment: CommentResponse;
+}
+
 
 

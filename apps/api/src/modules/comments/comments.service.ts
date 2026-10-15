@@ -10,6 +10,7 @@ import {
 import { prisma } from '../../db/prisma';
 import { NotFoundError, ForbiddenError } from '../../common/errors/app-error';
 import { assertPermission } from '../../common/permissions';
+import { socketService } from '../socket/socket.service';
 
 export interface CommentWithAuthor {
   id: string;
@@ -171,7 +172,10 @@ export class CommentsService {
       return comment;
     });
 
-    return this.mapCommentToResponse(created);
+    const response = this.mapCommentToResponse(created);
+    socketService.emitCommentCreated(project.id, taskId, response);
+
+    return response;
   }
 
   /**

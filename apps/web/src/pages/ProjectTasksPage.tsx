@@ -26,6 +26,8 @@ import {
 } from '../components/ui';
 import { CreateTaskModal } from '../components/CreateTaskModal';
 import { TaskDetailDrawer } from '../components/TaskDetailDrawer';
+import { useProjectSocket } from '../hooks/useProjectSocket';
+import { PresenceAvatars } from '../components/PresenceAvatars';
 
 function getStatusBadgeVariant(status: TaskStatus): BadgeVariant {
   switch (status) {
@@ -77,6 +79,9 @@ export function ProjectTasksPage() {
   const limit = 20;
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Real-time Socket & Presence
+  const { presenceUsers } = useProjectSocket(projectId);
 
   // Fetch Project details
   const { data: projectData } = useQuery({
@@ -207,6 +212,9 @@ export function ProjectTasksPage() {
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
+          {/* Real-time Project Presence */}
+          <PresenceAvatars users={presenceUsers} />
+
           {/* View Mode Switcher */}
           <div className="flex items-center rounded-lg border border-border bg-surface p-0.5 text-xs font-medium">
             <span className="px-3 py-1.5 rounded-md bg-surface-hover text-text-primary font-semibold shadow-xs">

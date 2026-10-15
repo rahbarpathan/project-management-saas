@@ -1,12 +1,18 @@
+import http from 'http';
 import { createApp } from './app';
 import { getEnv } from './config/env';
 import { prisma } from './db/prisma';
 import { logger } from './common/logger';
+import { socketService } from './modules/socket';
 
 const env = getEnv();
 const app = createApp();
+const server = http.createServer(app);
 
-const server = app.listen(env.PORT, () => {
+// Initialize Socket.IO real-time server
+socketService.init(server);
+
+server.listen(env.PORT, () => {
   logger.info(`SprintFlow API running on port ${env.PORT} [${env.NODE_ENV}]`);
 });
 

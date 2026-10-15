@@ -3,9 +3,11 @@ import {
   updateProjectSchema,
   createTaskSchema,
   taskPaginationQuerySchema,
+  activityPaginationQuerySchema,
 } from '@sprintflow/shared';
 import { projectsController } from './projects.controller';
 import { tasksController } from '../tasks';
+import { commentsController } from '../comments';
 import { authenticate } from '../../common/middleware/authenticate';
 import { validate } from '../../common/middleware/validate';
 
@@ -36,4 +38,12 @@ projectsRouter.post(
   validate({ body: createTaskSchema }),
   tasksController.createTask.bind(tasksController),
 );
+
+// Project activity route
+projectsRouter.get(
+  '/:id/activity',
+  validate({ query: activityPaginationQuerySchema }),
+  commentsController.getProjectActivity.bind(commentsController),
+);
+
 

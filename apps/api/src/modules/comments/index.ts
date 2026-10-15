@@ -1,5 +1,4 @@
-import { Router } from 'express';
-
-export const commentsRouter = Router();
-
-// Module routes will be registered here
+export * from './comments.routes';
+export * from './comments.controller';
+export * from './comments.service';
+export * from './activity.service';

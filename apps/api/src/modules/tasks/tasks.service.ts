@@ -422,19 +422,51 @@ export class TasksService {
         include: { assignee: true },
       });
 
+      const changes: Record<string, { from: unknown; to: unknown }> = {};
+      if (input.title !== undefined && input.title !== task.title) {
+        changes.title = { from: task.title, to: input.title };
+      }
+      if (input.status !== undefined && input.status !== task.status) {
+        changes.status = { from: task.status, to: input.status };
+      }
+      if (input.priority !== undefined && input.priority !== task.priority) {
+        changes.priority = { from: task.priority, to: input.priority };
+      }
+      if (input.assigneeId !== undefined && input.assigneeId !== task.assigneeId) {
+        changes.assigneeId = { from: task.assigneeId, to: input.assigneeId };
+      }
+      if (input.description !== undefined && input.description !== task.description) {
+        changes.description = { from: task.description, to: input.description };
+      }
+      if (input.dueDate !== undefined) {
+        const oldDue = task.dueDate ? new Date(task.dueDate).toISOString() : null;
+        const newDue = input.dueDate ? new Date(input.dueDate).toISOString() : null;
+        if (oldDue !== newDue) {
+          changes.dueDate = { from: oldDue, to: newDue };
+        }
+      }
+
+      const action =
+        changes.status && Object.keys(changes).length === 1
+          ? 'TASK_STATUS_CHANGED'
+          : changes.assigneeId && Object.keys(changes).length === 1
+            ? 'TASK_ASSIGNED'
+            : 'TASK_UPDATED';
+
       await tx.activityLog.create({
         data: {
           workspaceId: project.workspaceId,
           projectId: project.id,
           taskId,
           actorId: userId,
-          action: 'TASK_UPDATED',
+          action,
           metadata: {
             title: freshTask.title,
             status: freshTask.status,
             priority: freshTask.priority,
             version: freshTask.version,
-          },
+            changes,
+          } as Prisma.InputJsonValue,
         },
       });
 
@@ -601,6 +633,13 @@ export class TasksService {
         include: { assignee: true },
       });
 
+      const moveChanges: Record<string, { from: unknown; to: unknown }> = {
+        position: { from: Number(task.position), to: finalPosition },
+      };
+      if (task.status !== targetStatus) {
+        moveChanges.status = { from: task.status, to: targetStatus };
+      }
+
       await tx.activityLog.create({
         data: {
           workspaceId: project.workspaceId,
@@ -613,7 +652,8 @@ export class TasksService {
             toStatus: targetStatus,
             position: finalPosition,
             version: freshTask.version,
-          },
+            changes: moveChanges,
+          } as Prisma.InputJsonValue,
         },
       });
 

@@ -268,4 +268,83 @@ export const taskListResponseSchema = z.object({
 
 export type TaskListResponse = z.infer<typeof taskListResponseSchema>;
 
+// Comment Schemas
+export const createCommentSchema = z.object({
+  content: z.string().trim().min(1, 'Comment cannot be empty').max(10000, 'Comment cannot exceed 10000 characters'),
+});
+
+export type CreateCommentInput = z.infer<typeof createCommentSchema>;
+
+export const updateCommentSchema = z.object({
+  content: z.string().trim().min(1, 'Comment cannot be empty').max(10000, 'Comment cannot exceed 10000 characters'),
+});
+
+export type UpdateCommentInput = z.infer<typeof updateCommentSchema>;
+
+export const commentPaginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+
+export type CommentPaginationQuery = z.infer<typeof commentPaginationQuerySchema>;
+
+export const commentResponseSchema = z.object({
+  id: z.string().uuid(),
+  taskId: z.string().uuid(),
+  authorId: z.string().uuid(),
+  content: z.string(),
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
+  author: userResponseSchema.optional(),
+});
+
+export type CommentResponse = z.infer<typeof commentResponseSchema>;
+
+export const commentListResponseSchema = z.object({
+  comments: z.array(commentResponseSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+  }),
+});
+
+export type CommentListResponse = z.infer<typeof commentListResponseSchema>;
+
+// Activity Schemas
+export const activityPaginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+});
+
+export type ActivityPaginationQuery = z.infer<typeof activityPaginationQuerySchema>;
+
+export const activityResponseSchema = z.object({
+  id: z.string().uuid(),
+  workspaceId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid(),
+  taskId: z.string().uuid().nullable().optional(),
+  actorId: z.string().uuid(),
+  action: z.string(),
+  metadata: z.record(z.any()),
+  createdAt: z.union([z.string(), z.date()]),
+  actor: userResponseSchema.optional(),
+});
+
+export type ActivityResponse = z.infer<typeof activityResponseSchema>;
+
+export const activityListResponseSchema = z.object({
+  activities: z.array(activityResponseSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+  }),
+});
+
+export type ActivityListResponse = z.infer<typeof activityListResponseSchema>;
+
+
 

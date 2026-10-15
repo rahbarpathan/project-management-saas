@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './components/ui/Toast';
 import { AuthProvider } from './context/AuthContext';
+import { WorkspaceProvider } from './context/WorkspaceContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
 import { AppShell } from './components/AppShell';
@@ -10,6 +11,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DesignSystemPage } from './pages/DesignSystemPage';
+import { ProjectsPage } from './pages/ProjectsPage';
+import { ProjectTasksPage } from './pages/ProjectTasksPage';
+import { MembersPage } from './pages/MembersPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,8 +41,24 @@ export function App() {
 
                 {/* Protected Application Routes */}
                 <Route element={<ProtectedRoute />}>
-                  <Route element={<AppShell />}>
+                  <Route
+                    element={
+                      <WorkspaceProvider>
+                        <AppShell />
+                      </WorkspaceProvider>
+                    }
+                  >
                     <Route path="/" element={<DashboardPage />} />
+                    <Route path="/workspaces/:workspaceId/projects" element={<ProjectsPage />} />
+                    <Route
+                      path="/workspaces/:workspaceId/projects/:projectId/tasks"
+                      element={<ProjectTasksPage />}
+                    />
+                    <Route
+                      path="/projects/:projectId/tasks"
+                      element={<ProjectTasksPage />}
+                    />
+                    <Route path="/workspaces/:workspaceId/members" element={<MembersPage />} />
                     <Route path="/design" element={<DesignSystemPage />} />
                   </Route>
                 </Route>

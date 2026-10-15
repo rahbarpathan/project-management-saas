@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-export type ToastType = 'success' | 'error' | 'info';
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 export interface ToastItem {
   id: string;
@@ -15,6 +15,7 @@ interface ToastContextType {
   success: (message: string, title?: string) => void;
   error: (message: string, title?: string) => void;
   info: (message: string, title?: string) => void;
+  warning: (message: string, title?: string) => void;
   remove: (id: string) => void;
 }
 
@@ -46,9 +47,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const success = useCallback((message: string, title?: string) => toast({ type: 'success', message, title }), [toast]);
   const error = useCallback((message: string, title?: string) => toast({ type: 'error', message, title }), [toast]);
   const info = useCallback((message: string, title?: string) => toast({ type: 'info', message, title }), [toast]);
+  const warning = useCallback((message: string, title?: string) => toast({ type: 'warning', message, title }), [toast]);
 
   return (
-    <ToastContext.Provider value={{ toast, success, error, info, remove }}>
+    <ToastContext.Provider value={{ toast, success, error, info, warning, remove }}>
       {children}
       <div
         className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"
@@ -63,13 +65,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 ? 'bg-surface border-danger/40 text-danger'
                 : t.type === 'success'
                   ? 'bg-surface border-success/40 text-success'
-                  : 'bg-surface border-border text-text-primary'
+                  : t.type === 'warning'
+                    ? 'bg-surface border-warning/40 text-warning'
+                    : 'bg-surface border-border text-text-primary'
             }`}
           >
             <div className="shrink-0 mt-0.5">
               {t.type === 'error' && (
                 <svg className="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              )}
+              {t.type === 'warning' && (
+                <svg className="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               )}
               {t.type === 'success' && (

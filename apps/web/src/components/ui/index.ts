@@ -10,3 +10,4 @@ export * from './Avatar';
 export * from './Spinner';
 export * from './Skeleton';
 export * from './FeedbackStates';
+export * from './Textarea';

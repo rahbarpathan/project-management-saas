@@ -2,6 +2,7 @@ import { useState } from 'react';
 import {
   Button,
   Input,
+  Textarea,
   Select,
   Card,
   CardHeader,
@@ -163,6 +164,15 @@ export function DesignSystemPage() {
               ]}
               helperText="Choose an option from the list"
             />
+
+            <div className="md:col-span-2">
+              <Textarea
+                label="Textarea Component"
+                placeholder="Multi-line comments or descriptions..."
+                rows={3}
+                helperText="Supports automatic resizing and error states"
+              />
+            </div>
           </CardContent>
         </Card>
       </section>

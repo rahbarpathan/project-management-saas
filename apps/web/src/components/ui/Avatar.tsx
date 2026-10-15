@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export type AvatarSize = 'sm' | 'md' | 'lg';
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface AvatarProps {
   src?: string | null;
@@ -13,6 +13,7 @@ export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) 
   const [imageError, setImageError] = useState(false);
 
   const sizeClasses: Record<AvatarSize, string> = {
+    xs: 'w-6 h-6 text-[10px]',
     sm: 'w-7 h-7 text-xs',
     md: 'w-9 h-9 text-sm',
     lg: 'w-12 h-12 text-base',

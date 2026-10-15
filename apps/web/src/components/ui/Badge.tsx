@@ -1,14 +1,16 @@
 import React from 'react';
 
-export type BadgeVariant = 'default' | 'accent' | 'success' | 'danger' | 'warning' | 'muted';
+export type BadgeVariant = 'default' | 'neutral' | 'accent' | 'success' | 'danger' | 'warning' | 'muted';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
+  size?: 'sm' | 'md';
   dot?: boolean;
 }
 
 export function Badge({
   variant = 'default',
+  size = 'md',
   dot = false,
   className = '',
   children,
@@ -16,6 +18,11 @@ export function Badge({
 }: BadgeProps) {
   const variantClasses: Record<BadgeVariant, { bg: string; text: string; dot: string }> = {
     default: {
+      bg: 'bg-surface-hover border border-border',
+      text: 'text-text-primary',
+      dot: 'bg-text-muted',
+    },
+    neutral: {
       bg: 'bg-surface-hover border border-border',
       text: 'text-text-primary',
       dot: 'bg-text-muted',
@@ -51,7 +58,9 @@ export function Badge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium ${currentVariant.bg} ${currentVariant.text} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium ${
+        size === 'sm' ? 'text-[10px] px-2 py-0.5' : 'text-xs px-2.5 py-0.5'
+      } ${currentVariant.bg} ${currentVariant.text} ${className}`}
       {...props}
     >
       {dot && <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${currentVariant.dot}`} aria-hidden="true" />}

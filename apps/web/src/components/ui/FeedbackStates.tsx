@@ -24,7 +24,7 @@ export interface EmptyStateProps {
   icon?: React.ReactNode;
   title: string;
   description?: string;
-  action?: {
+  action?: React.ReactNode | {
     label: string;
     onClick: () => void;
   };
@@ -46,9 +46,13 @@ export function EmptyState({ icon, title, description, action, className = '' }:
       <h3 className="text-base font-semibold text-text-primary">{title}</h3>
       {description && <p className="text-sm text-text-muted">{description}</p>}
       {action && (
-        <Button variant="secondary" size="sm" onClick={action.onClick} className="mt-2">
-          {action.label}
-        </Button>
+        React.isValidElement(action) ? (
+          <div className="mt-2">{action}</div>
+        ) : (
+          <Button variant="secondary" size="sm" onClick={(action as { label: string; onClick: () => void }).onClick} className="mt-2">
+            {(action as { label: string; onClick: () => void }).label}
+          </Button>
+        )
       )}
     </div>
   );
@@ -58,6 +62,7 @@ export interface ErrorStateProps {
   title?: string;
   message?: string;
   onRetry?: () => void;
+  retry?: () => void;
   className?: string;
 }
 
@@ -65,8 +70,11 @@ export function ErrorState({
   title = 'Something went wrong',
   message = 'An error occurred while loading this content.',
   onRetry,
+  retry,
   className = '',
 }: ErrorStateProps) {
+  const handleRetry = onRetry || retry;
+
   return (
     <div
       className={`flex flex-col items-center justify-center p-8 text-center max-w-sm mx-auto gap-3 text-danger ${className}`}
@@ -79,8 +87,8 @@ export function ErrorState({
       </div>
       <h3 className="text-base font-semibold text-text-primary">{title}</h3>
       <p className="text-sm text-text-muted">{message}</p>
-      {onRetry && (
-        <Button variant="secondary" size="sm" onClick={onRetry} className="mt-2">
+      {handleRetry && (
+        <Button variant="secondary" size="sm" onClick={handleRetry} className="mt-2">
           Try again
         </Button>
       )}

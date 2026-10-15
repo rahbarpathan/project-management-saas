@@ -6,6 +6,7 @@ export interface DrawerProps {
   title?: string;
   children: React.ReactNode;
   position?: 'left' | 'right';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export function Drawer({
@@ -14,8 +15,17 @@ export function Drawer({
   title,
   children,
   position = 'right',
+  size = 'sm',
 }: DrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
+
+  const sizeClasses = {
+    sm: 'max-w-sm',
+    md: 'max-w-md',
+    lg: 'max-w-lg',
+    xl: 'max-w-xl',
+    '2xl': 'max-w-2xl',
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -48,7 +58,7 @@ export function Drawer({
     >
       <div
         ref={drawerRef}
-        className={`w-full max-w-sm h-full bg-surface border-border flex flex-col shadow-2xl ${
+        className={`w-full ${sizeClasses[size]} h-full bg-surface border-border flex flex-col shadow-2xl ${
           isLeft ? 'mr-auto border-r' : 'ml-auto border-l'
         }`}
       >

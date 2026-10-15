@@ -1,5 +1,4 @@
-import { Router } from 'express';
-
-export const tasksRouter = Router();
-
-// Module routes will be registered here
+export * from './tasks.routes';
+export * from './tasks.controller';
+export * from './tasks.service';
+export * from './position';

@@ -1,6 +1,11 @@
 import { Router } from 'express';
-import { updateProjectSchema } from '@sprintflow/shared';
+import {
+  updateProjectSchema,
+  createTaskSchema,
+  taskPaginationQuerySchema,
+} from '@sprintflow/shared';
 import { projectsController } from './projects.controller';
+import { tasksController } from '../tasks';
 import { authenticate } from '../../common/middleware/authenticate';
 import { validate } from '../../common/middleware/validate';
 
@@ -18,3 +23,17 @@ projectsRouter.patch(
 );
 
 projectsRouter.delete('/:id', projectsController.deleteProject.bind(projectsController));
+
+// Task sub-routes for projects
+projectsRouter.get(
+  '/:id/tasks',
+  validate({ query: taskPaginationQuerySchema }),
+  tasksController.listProjectTasks.bind(tasksController),
+);
+
+projectsRouter.post(
+  '/:id/tasks',
+  validate({ body: createTaskSchema }),
+  tasksController.createTask.bind(tasksController),
+);
+

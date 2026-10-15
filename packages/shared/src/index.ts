@@ -178,3 +178,94 @@ export const projectListResponseSchema = z.object({
 
 export type ProjectListResponse = z.infer<typeof projectListResponseSchema>;
 
+// Task Schemas
+export const TaskStatusSchema = z.enum(['BACKLOG', 'TODO', 'IN_PROGRESS', 'DONE']);
+export type TaskStatus = z.infer<typeof TaskStatusSchema>;
+
+export const TaskPrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'URGENT']);
+export type TaskPriority = z.infer<typeof TaskPrioritySchema>;
+
+export const TaskSortBySchema = z.enum(['position', 'createdAt', 'dueDate', 'priority', 'title']);
+export type TaskSortBy = z.infer<typeof TaskSortBySchema>;
+
+export const SortOrderSchema = z.enum(['asc', 'desc']);
+export type SortOrder = z.infer<typeof SortOrderSchema>;
+
+export const createTaskSchema = z.object({
+  title: z.string().trim().min(1, 'Title is required').max(255, 'Title cannot exceed 255 characters'),
+  description: z.string().trim().max(5000, 'Description cannot exceed 5000 characters').optional().nullable(),
+  status: TaskStatusSchema.default('BACKLOG'),
+  priority: TaskPrioritySchema.default('MEDIUM'),
+  assigneeId: z.string().uuid('Invalid assignee ID').optional().nullable(),
+  dueDate: z.coerce.date().optional().nullable(),
+});
+
+export type CreateTaskInput = z.input<typeof createTaskSchema>;
+
+export const updateTaskSchema = z.object({
+  version: z.number().int().positive('Version must be a positive integer'),
+  title: z.string().trim().min(1, 'Title cannot be empty').max(255, 'Title cannot exceed 255 characters').optional(),
+  description: z.string().trim().max(5000, 'Description cannot exceed 5000 characters').optional().nullable(),
+  status: TaskStatusSchema.optional(),
+  priority: TaskPrioritySchema.optional(),
+  assigneeId: z.string().uuid('Invalid assignee ID').optional().nullable(),
+  dueDate: z.coerce.date().optional().nullable(),
+});
+
+export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
+
+export const moveTaskSchema = z.object({
+  version: z.number().int().positive('Version must be a positive integer'),
+  status: TaskStatusSchema.optional(),
+  prevTaskId: z.string().uuid('Invalid previous task ID').optional().nullable(),
+  nextTaskId: z.string().uuid('Invalid next task ID').optional().nullable(),
+});
+
+export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
+
+export const taskPaginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  search: z.string().trim().optional(),
+  status: TaskStatusSchema.optional(),
+  priority: TaskPrioritySchema.optional(),
+  assigneeId: z.string().uuid('Invalid assignee ID').optional(),
+  dueDateFrom: z.coerce.date().optional(),
+  dueDateTo: z.coerce.date().optional(),
+  sortBy: TaskSortBySchema.default('position'),
+  sortOrder: SortOrderSchema.default('asc'),
+});
+
+export type TaskPaginationQuery = z.infer<typeof taskPaginationQuerySchema>;
+
+export const taskResponseSchema = z.object({
+  id: z.string().uuid(),
+  projectId: z.string().uuid(),
+  title: z.string(),
+  description: z.string().nullable().optional(),
+  status: TaskStatusSchema,
+  priority: TaskPrioritySchema,
+  assigneeId: z.string().uuid().nullable().optional(),
+  dueDate: z.union([z.string(), z.date()]).nullable().optional(),
+  position: z.number(),
+  version: z.number().int(),
+  createdAt: z.union([z.string(), z.date()]),
+  updatedAt: z.union([z.string(), z.date()]),
+  assignee: userResponseSchema.nullable().optional(),
+});
+
+export type TaskResponse = z.infer<typeof taskResponseSchema>;
+
+export const taskListResponseSchema = z.object({
+  tasks: z.array(taskResponseSchema),
+  pagination: z.object({
+    page: z.number().int(),
+    limit: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+  }),
+});
+
+export type TaskListResponse = z.infer<typeof taskListResponseSchema>;
+
+

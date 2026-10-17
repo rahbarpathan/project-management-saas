@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { createApp } from '../../app';
 import { prisma } from '../../db/prisma';
 

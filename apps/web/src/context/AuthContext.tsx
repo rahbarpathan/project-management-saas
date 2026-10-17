@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { UserResponse, LoginInput, RegisterInput } from '@sprintflow/shared';
-import { api } from '../lib/api-client';
+import { api, setStoredToken } from '../lib/api-client';
 
 interface AuthContextType {
   user: UserResponse | null;
@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth();
 
     const handleUnauthorized = () => {
+      setStoredToken(null);
       setUser(null);
       queryClient.clear();
     };
@@ -44,13 +45,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [checkAuth, queryClient]);
 
   const login = async (credentials: LoginInput) => {
-    const res = await api.post<{ user: UserResponse }>('/api/auth/login', credentials);
+    const res = await api.post<{ user: UserResponse; accessToken?: string }>('/api/auth/login', credentials);
+    if (res.accessToken) {
+      setStoredToken(res.accessToken);
+    }
     setUser(res.user);
     queryClient.clear();
   };
 
   const register = async (data: RegisterInput) => {
-    const res = await api.post<{ user: UserResponse }>('/api/auth/register', data);
+    const res = await api.post<{ user: UserResponse; accessToken?: string }>('/api/auth/register', data);
+    if (res.accessToken) {
+      setStoredToken(res.accessToken);
+    }
     setUser(res.user);
     queryClient.clear();
   };
@@ -61,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore network errors on logout
     } finally {
+      setStoredToken(null);
       setUser(null);
       queryClient.clear();
     }

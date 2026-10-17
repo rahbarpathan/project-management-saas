@@ -14,7 +14,7 @@ export function setAuthCookies(res: Response, accessToken: string, refreshToken:
   res.cookie(ACCESS_TOKEN_COOKIE, accessToken, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
@@ -22,7 +22,7 @@ export function setAuthCookies(res: Response, accessToken: string, refreshToken:
   res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
@@ -35,14 +35,14 @@ export function clearAuthCookies(res: Response): void {
   res.clearCookie(ACCESS_TOKEN_COOKIE, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   });
 
   res.clearCookie(REFRESH_TOKEN_COOKIE, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/',
   });
 }
@@ -57,6 +57,7 @@ export class AuthController {
 
       res.status(201).json({
         user: result.user,
+        accessToken: result.tokens.accessToken,
       });
     } catch (error) {
       next(error);
@@ -72,6 +73,7 @@ export class AuthController {
 
       res.status(200).json({
         user: result.user,
+        accessToken: result.tokens.accessToken,
       });
     } catch (error) {
       next(error);
@@ -111,6 +113,7 @@ export class AuthController {
 
       res.status(200).json({
         user: result.user,
+        accessToken: result.tokens.accessToken,
       });
     } catch (error) {
       next(error);

@@ -20,6 +20,28 @@ export class ApiError extends Error {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+export const TOKEN_STORAGE_KEY = 'sprintflow_access_token';
+
+export function getStoredToken(): string | null {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredToken(token: string | null): void {
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // Ignore storage errors in private browsing
+  }
+}
+
 let isRefreshing = false;
 let refreshSubscribers: Array<(success: boolean) => void> = [];
 
@@ -45,6 +67,12 @@ export async function apiRequest<T>(
   const headers = new Headers(options.headers);
   if (!headers.has('Content-Type') && options.body && typeof options.body === 'string') {
     headers.set('Content-Type', 'application/json');
+  }
+
+  // Attach Bearer token fallback for cross-site cookie environments
+  const token = getStoredToken();
+  if (token && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${token}`);
   }
 
   const config: RequestInit = {
@@ -78,22 +106,33 @@ export async function apiRequest<T>(
       isRefreshing = true;
 
       try {
+        const refreshHeaders = new Headers();
+        if (token) {
+          refreshHeaders.set('Authorization', `Bearer ${token}`);
+        }
         const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
           method: 'POST',
+          headers: refreshHeaders,
           credentials: 'include',
         });
 
         if (refreshResponse.ok) {
+          const refreshJson = await refreshResponse.json();
+          if (refreshJson?.accessToken) {
+            setStoredToken(refreshJson.accessToken);
+          }
           isRefreshing = false;
           onRefreshed(true);
           // Retry the original request
           return apiRequest<T>(endpoint, { ...options, skipAuthRefresh: true });
         } else {
+          setStoredToken(null);
           isRefreshing = false;
           onRefreshed(false);
           window.dispatchEvent(new CustomEvent('auth:unauthorized'));
         }
       } catch {
+        setStoredToken(null);
         isRefreshing = false;
         onRefreshed(false);
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
